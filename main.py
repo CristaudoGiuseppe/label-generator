@@ -38,55 +38,117 @@ def get_current_date() -> str:
     return italian_date_format
 
 
-@app.route('/labels/<tracking>', methods=['GET'])
-#@require_api_key
-def generate_label(tracking):
+# @app.route('/labels/<tracking>', methods=['GET'])
+# #@require_api_key
+# def generate_label(tracking):
 
-    #body = request.json
+#     #body = request.json
     
-    # try:
-    #     mittente = body['mittente']
-    #     destinatario = body['destinatario']
-    # except:
-    #     mittente = 1
-    #     destinatario = 1
-    try:
-        mittente = int(request.args.get('mittente', default=0))
-        destinatario = int(request.args.get('destinatario', default=1))
-    except ValueError:
-        # Handle the case where the parameter value cannot be converted to an integer
-        mittente = 1
-        destinatario = 1
+#     # try:
+#     #     mittente = body['mittente']
+#     #     destinatario = body['destinatario']
+#     # except:
+#     #     mittente = 1
+#     #     destinatario = 1
+#     try:
+#         mittente = int(request.args.get('mittente', default=0))
+#         destinatario = int(request.args.get('destinatario', default=1))
+#     except ValueError:
+#         # Handle the case where the parameter value cannot be converted to an integer
+#         mittente = 1
+#         destinatario = 1
     
-    ref_number = generate_random_ref_number()
+#     ref_number = generate_random_ref_number()
     
-    current_date = get_current_date()
+#     current_date = get_current_date()
     
-    generate_and_save_barcode(tracking)
+#     generate_and_save_barcode(tracking)
     
-    generate_and_save_minicode(tracking)
+#     generate_and_save_minicode(tracking)
     
-    data_matrix_input = create_data_matrix_input(
-        tracking, 
-        ref_number, 
-        Address.get_sender_address(mittente), 
-        Address.get_recipient_address(destinatario))
+#     data_matrix_input = create_data_matrix_input(
+#         tracking, 
+#         ref_number, 
+#         Address.get_sender_address(mittente), 
+#         Address.get_recipient_address(destinatario))
     
-    generate_and_save_data_matrix(data_matrix_input)
+#     generate_and_save_data_matrix(data_matrix_input)
     
-    label_path = process_label(
-        tracking, 
-        ref_number, 
-        current_date, 
-        Address.get_sender_address(mittente),
-        Address.get_recipient_address(destinatario))
+#     label_path = process_label(
+#         tracking, 
+#         ref_number, 
+#         current_date, 
+#         Address.get_sender_address(mittente),
+#         Address.get_recipient_address(destinatario))
     
-    pdf_path = convert_label_to_pdf(tracking)
+#     pdf_path = convert_label_to_pdf(tracking)
     
-    try:
-        return send_file(pdf_path, download_name=f"{tracking}.pdf", as_attachment=True)
-    except FileNotFoundError:
-        return {"error": "Error generating the label"}, 500
+#     try:
+#         return send_file(pdf_path, download_name=f"{tracking}.pdf", as_attachment=True)
+#     except FileNotFoundError:
+#         return {"error": "Error generating the label"}, 500
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+def main():
+    st.title('Label Generator')
+
+    tracking = st.text_input('Enter Tracking Number')
+
+    # Dropdown for selecting sender address
+    sender_options = ["Marta Sciazzi", "Luca Amendola", "Giorgia Rizzo", "Marco Snuffi", "Martina Fedi"]
+    sender_number = st.selectbox('Select Sender', options=sender_options)
+    selected_sender_index = sender_options.index(sender_number)
+
+    # Dropdown for selecting recipient address
+    recipient_options = ["SPRING GDS", "DVG AUTOMATION SPA", "Gxo Logistics"]
+    recipient_options = ["SPRING GDS"]
+    recipient_number = st.selectbox('Select Recipient', options=recipient_options)
+    selected_recipient_index = recipient_options.index(recipient_number)
+
+    # Create an empty placeholder for the button
+    button_placeholder = st.empty()
+
+    # Enable the button only if the tracking input is not empty
+    if tracking:
+        generate_label_button = button_placeholder.button('Generate Label')
+
+        if generate_label_button:
+            # pdf_buffer = generate_label(tracking, sender_number, recipient_number)
+            ref_number = generate_random_ref_number()
+    
+            current_date = get_current_date()
+            
+            generate_and_save_barcode(tracking)
+            
+            generate_and_save_minicode(tracking)
+            
+            data_matrix_input = create_data_matrix_input(
+                tracking, 
+                ref_number, 
+                Address.get_sender_address(selected_sender_index), 
+                Address.get_recipient_address(selected_recipient_index))
+            
+            generate_and_save_data_matrix(data_matrix_input)
+            
+            label_path = process_label(
+                tracking, 
+                ref_number, 
+                current_date, 
+                Address.get_sender_address(selected_sender_index),
+                Address.get_recipient_address(selected_recipient_index))
+            
+            pdf_path = convert_label_to_pdf(tracking)
+
+            pdf_path = f"pdf_labels/{tracking}.pdf"
+            if os.path.exists(pdf_path):
+                st.success('Label generated successfully!')
+                with open(pdf_path, 'rb') as f:
+                    pdf_bytes = f.read()
+                st.download_button(label='Download label', data=pdf_bytes, file_name=f"{tracking}.pdf", mime='application/pdf')
+            else:
+                st.error("PDF file not found.")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()
