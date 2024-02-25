@@ -59,11 +59,11 @@ def process_label(tracking: str, ref_number: str, current_date: str, sender_addr
     draw = ImageDraw.Draw(base_label_image)
     # Use a predefined or a system font. For a predefined font, specify the path to the font file.
     # For example purposes, we'll use a default PIL font for demonstration.
-    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 18)  # 'arialbd.ttf' is Arial Bold; specify the full path if necessary
+    font = ImageFont.load_default().font_variant(size=18)#ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 18)  # 'arialbd.ttf' is Arial Bold; specify the full path if necessary
     text_position = (338, 770)  # Adjust the position as needed
     draw.text(text_position, tracking, fill="black", font=font)
     
-    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", 18)
+    font = ImageFont.load_default().font_variant(size=18)#ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", 18)
     text_position = (485, 330)
     draw.text(text_position, current_date, fill="black", font=font)
     
@@ -79,7 +79,7 @@ def process_label(tracking: str, ref_number: str, current_date: str, sender_addr
     # Create a new image with white background
     txt = Image.new('RGB', (200, 25), color=(255, 255, 255))
     d = ImageDraw.Draw(txt)
-    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", 22)
+    font = ImageFont.load_default().font_variant(size=22)#ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", 22)
     # Draw text with white fill color
     d.text((0, 0), tracking, fill="black", font=font)
 
@@ -95,7 +95,7 @@ def process_label(tracking: str, ref_number: str, current_date: str, sender_addr
     return modified_label_path
 
 # Example usage
-modified_label_path = process_label("1UW0GFZ291334", "123456", "19/02/2024", Address.get_sender_address(1), Address.get_recipient_address(1))
-print(f"Modified label saved to: {modified_label_path}")
+#modified_label_path = process_label("1UW0GFZ291334", "123456", "19/02/2024", Address.get_sender_address(1), Address.get_recipient_address(1))
+#print(f"Modified label saved to: {modified_label_path}")
 
 

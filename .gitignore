@@ -3,3 +3,5 @@ datamatrix
 minicode
 pdf_labels
 barcodes
+*.pyc
+__pycache__/
