@@ -14,10 +14,13 @@ def generate_and_save_barcode(tracking_number: str) -> None:
         barcode.default_writer_options['write_text'] = False
         barcode.write(f)
         
-def generate_and_save_minicode(tracking_number: str) -> None:
+def generate_and_save_minicode(tracking_number: str, version: str = "1") -> None:
      # Encode the data matrix input
     #tracking_number = f'PBE{tracking_number}'
-    encoded = encode(f'PBE{tracking_number}'.encode('utf-8'))
+    if(version == "1"):
+        encoded = encode(f'PBE{tracking_number}'.encode('utf-8'))
+    else:
+        encoded = encode(f'{tracking_number}'.encode('utf-8'))
     
     # Convert the encoded data to an image using PIL
     img = Image.frombytes('RGB', (encoded.width, encoded.height), encoded.pixels)
