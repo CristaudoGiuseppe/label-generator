@@ -32,11 +32,11 @@ def generate_and_save_minicode(tracking_number: str, version: str = "1") -> None
 # Step 2: Generate a new data matrix with the specified input
 # Use a library capable of generating data matrices
 # Similarly, you might create a function like generate_data_matrix(data_matrix_input) that saves the data matrix image and returns its path
-def generate_and_save_data_matrix(data_matrix_input: str) -> None:
+def generate_and_save_data_matrix(data_matrix_input: str, size: str = "96x96") -> None:
    # data_matrix_input = f"{tracking_number}||087000002562819008|Yusen Logistics (Italy) S.p.A.||1, Yusen-Via Privata Piemonte,|20204|Arluno (Milano)|||1|CHIARA VERZELLA||TRESANDA DEL SALE 6,22|25121|BRESCIA|||PBS|||||+3902902517257||RVE|10"
     
     # Encode the data matrix input
-    encoded = encode(data_matrix_input.encode('utf-8'), size="96x96")
+    encoded = encode(data_matrix_input.encode('utf-8'), size=size)
     
     # Convert the encoded data to an image using PIL
     img = Image.frombytes('RGB', (encoded.width, encoded.height), encoded.pixels)
